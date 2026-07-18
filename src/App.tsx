@@ -534,56 +534,78 @@ function FraudTypesSection() {
               <motion.div
                 key={f.id}
                 variants={fadeUp}
-               
-                className="card rounded-xl overflow-hidden cursor-pointer select-none"
-                onClick={() => setOpen(isOpen ? null : f.id)}
+                className={`relative ${isOpen ? 'z-50' : 'z-10'}`}
               >
-                <div className="p-5">
-                  {/* Header */}
+                {/* Invisible placeholder to maintain grid layout without shifting */}
+                <div className="p-5 invisible pointer-events-none border border-transparent">
                   <div className="flex items-start justify-between mb-4">
-                    <span className="font-mono text-zinc-700 text-xs">{f.icon}</span>
-                    <span className={`tag ${sevLabel[f.severity]}`}>{f.severity}</span>
+                    <span className="font-mono text-xs">{f.icon}</span>
+                    <span className="tag">{f.severity}</span>
                   </div>
-
-                  <h3 className="text-white font-semibold text-lg mb-2 tracking-tight">{f.title}</h3>
-                  <p className="text-zinc-500 text-sm leading-relaxed">{f.summary}</p>
-
-                  <div className="mt-4 flex items-center gap-1.5 text-[11px] font-mono text-zinc-600">
-                    <motion.span
-                      animate={{ rotate: isOpen ? 90 : 0 }}
-                      transition={{ duration: 0.2 }}
-                      style={{ display: 'inline-block' }}
-                    >
-                      ›
-                    </motion.span>
-                    {isOpen ? 'Collapse' : 'How it works'}
+                  <h3 className="text-lg mb-2">{f.title}</h3>
+                  <p className="text-sm leading-relaxed">{f.summary}</p>
+                  <div className="mt-4 text-[11px] font-mono">
+                    How it works
                   </div>
                 </div>
 
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-5 pb-5 border-t" style={{ borderColor: '#111' }}>
-                        <p className="text-zinc-400 text-sm leading-relaxed mt-4 mb-4">{f.how}</p>
-                        <div className="section-label mb-2.5">Warning signs</div>
-                        <ul className="space-y-2">
-                          {f.indicators.map((ind, j) => (
-                            <li key={j} className="flex items-start gap-2 text-sm text-zinc-500">
-                              <span className="text-zinc-700 mt-0.5 flex-shrink-0">—</span>
-                              {ind}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {/* Absolute card that overlays without pushing content */}
+                <div
+                  className="card rounded-xl overflow-hidden cursor-pointer select-none absolute top-0 left-0 w-full"
+                  style={{
+                    boxShadow: isOpen ? '0 25px 50px -12px rgba(0,0,0,0.7)' : 'none',
+                    borderColor: isOpen ? '#333' : undefined,
+                    background: isOpen ? '#0d0d0d' : undefined,
+                  }}
+                  onClick={() => setOpen(isOpen ? null : f.id)}
+                >
+                  <div className="p-5">
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-4">
+                      <span className="font-mono text-zinc-700 text-xs">{f.icon}</span>
+                      <span className={`tag ${sevLabel[f.severity]}`}>{f.severity}</span>
+                    </div>
+
+                    <h3 className="text-white font-semibold text-lg mb-2 tracking-tight">{f.title}</h3>
+                    <p className="text-zinc-500 text-sm leading-relaxed">{f.summary}</p>
+
+                    <div className="mt-4 flex items-center gap-1.5 text-[11px] font-mono text-zinc-600">
+                      <motion.span
+                        animate={{ rotate: isOpen ? 90 : 0 }}
+                        transition={{ duration: 0.2 }}
+                        style={{ display: 'inline-block' }}
+                      >
+                        ›
+                      </motion.span>
+                      {isOpen ? 'Collapse' : 'How it works'}
+                    </div>
+                  </div>
+
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-5 pb-5 border-t" style={{ borderColor: '#111' }}>
+                          <p className="text-zinc-400 text-sm leading-relaxed mt-4 mb-4">{f.how}</p>
+                          <div className="section-label mb-2.5">Warning signs</div>
+                          <ul className="space-y-2">
+                            {f.indicators.map((ind, j) => (
+                              <li key={j} className="flex items-start gap-2 text-sm text-zinc-500">
+                                <span className="text-zinc-700 mt-0.5 flex-shrink-0">—</span>
+                                {ind}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </motion.div>
             )
           })}
@@ -753,15 +775,22 @@ function MonitorSection() {
                 <span className="font-mono text-zinc-700 text-[11px] ml-2">threat-feed.log</span>
               </div>
 
-              <div className="p-3 space-y-1.5 min-h-[360px]">
+              <div 
+                className="p-3 space-y-1.5 h-[380px] overflow-hidden relative"
+                style={{
+                  maskImage: 'linear-gradient(to bottom, black 75%, transparent)',
+                  WebkitMaskImage: 'linear-gradient(to bottom, black 75%, transparent)'
+                }}
+              >
                 <AnimatePresence initial={false}>
                   {feed.map(alert => (
                     <motion.div
+                      layout
                       key={alert.time + alert.msg}
-                      initial={{ opacity: 0, y: -8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                      initial={{ opacity: 0, y: -16, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                       className={`flex items-start gap-3 px-3 py-2.5 rounded-lg border-l-2 ${alertLeft[alert.type]}`}
                       style={{ background: 'rgba(255,255,255,0.015)' }}
                     >
