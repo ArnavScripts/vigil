@@ -1,0 +1,10 @@
+{
+  "description": "Educate users on digital banking fraud while providing interactive security monitoring tools, enhancing awareness and protection against online threats.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
